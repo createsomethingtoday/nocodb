@@ -10,15 +10,22 @@ RUN npm install -g pnpm@8.11.0
 # Copy package files
 COPY package*.json ./
 COPY pnpm-lock.yaml ./
+COPY packages/nocodb/package*.json ./packages/nocodb/
 
-# Install dependencies
+# Install root dependencies
 RUN pnpm install
 
 # Bundle app source
 COPY . .
 
-# Change to packages/nocodb directory and build
-RUN cd packages/nocodb && pnpm build
+# Install nocodb package dependencies
+RUN cd packages/nocodb && pnpm install
+
+# Install webpack globally
+RUN npm install -g webpack webpack-cli
+
+# Build nocodb
+RUN cd packages/nocodb && EE=true pnpm run docker:build
 
 # Expose port
 EXPOSE 8080
