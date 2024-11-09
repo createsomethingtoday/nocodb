@@ -17,11 +17,14 @@ RUN pnpm install
 # Bundle app source
 COPY . .
 
-# Build the application
-RUN pnpm build
+# Change to packages/nocodb directory and build
+RUN cd packages/nocodb && pnpm build
 
 # Expose port
 EXPOSE 8080
 
+# Set the working directory to the nocodb package
+WORKDIR /usr/src/app/packages/nocodb
+
 # Start command
-CMD [ "pnpm", "start" ]
+CMD ["pnpm", "start"]
