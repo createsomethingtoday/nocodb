@@ -4,8 +4,8 @@ FROM node:18.19.1
 # Create app directory
 WORKDIR /usr/src/app
 
-# Install pnpm
-RUN npm install -g pnpm@7.33.6
+# Install pnpm with the required version
+RUN npm install -g pnpm@8.15.1
 
 # Install webpack globally
 RUN npm install -g webpack webpack-cli
@@ -25,12 +25,11 @@ RUN pnpm install --no-frozen-lockfile
 # Copy source files
 COPY . .
 
-# Build nocodb with ignoring engine restrictions
+# Build nocodb
 RUN cd packages/nocodb && \
     NODE_ENV=production \
     EE=true \
-    SKIP_ENGINE_CHECK=true \
-    pnpm install --no-frozen-lockfile && \
+    pnpm install --no-frozen-lockfile --ignore-scripts && \
     NODE_ENV=production \
     EE=true \
     pnpm run docker:build
