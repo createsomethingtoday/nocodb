@@ -4,8 +4,8 @@ FROM node:18.19.0
 # Create app directory
 WORKDIR /usr/src/app
 
-# Install pnpm - use exact version that matches the lockfile
-RUN npm install -g pnpm@8.11.0
+# Install specific pnpm version that matches the project
+RUN npm install -g pnpm@7.33.6
 
 # Install webpack globally
 RUN npm install -g webpack webpack-cli
@@ -19,16 +19,16 @@ COPY packages/nocodb/package.json ./packages/nocodb/
 # Create required directories
 RUN mkdir -p packages/nocodb/dist
 
-# Install dependencies at root level
-RUN pnpm install --frozen-lockfile
+# Install dependencies at root level - allow lockfile updates
+RUN pnpm install --no-frozen-lockfile
 
 # Copy source files
 COPY . .
 
 # Build nocodb
 RUN cd packages/nocodb && \
-    NODE_ENV=production EE=true pnpm install --frozen-lockfile && \
-    NODE_ENV=production EE=true pnpm run build:docker
+    NODE_ENV=production EE=true pnpm install --no-frozen-lockfile && \
+    NODE_ENV=production EE=true pnpm run docker:build
 
 # Expose port
 EXPOSE 8080
@@ -41,4 +41,4 @@ ENV NODE_ENV=production
 ENV PORT=8080
 
 # Start command
-CMD ["pnpm", "start:docker"]
+CMD ["pnpm", "start"]
